@@ -16,9 +16,10 @@ void Agent::update(std::vector<Agent>& agents, const up::Vec2& dimension, float 
 	const up::Vec2 normal(orientation.getNormal());
 	const float max_dist(64.0f);
 
-	const float center_coef = 100.0f;
+	const float center_coef = 5.0f;
 	const float cohesion_coef = 2.0f;
-	const float repulsion_coef = 0.005f;
+	const float repulsion_coef = 0.05f;
+	const float noise_coef = 0.0f;
 
 	std::vector<Agent*> neighbors(getNeighbors(agents, max_dist));
 	if (!neighbors.empty()) {
@@ -63,6 +64,8 @@ void Agent::update(std::vector<Agent>& agents, const up::Vec2& dimension, float 
 	if (m_position.y > dimension.y) {
 		m_position.y = 0.0f;
 	}
+
+	m_orientation += noise_coef * ((rand() % 100) / 100.0f - 0.5f);
 
 	m_position += (dt * SimulationParameters::MoveSpeed) * getOrientation();
 }

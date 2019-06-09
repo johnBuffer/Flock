@@ -11,4 +11,5 @@ public:
 	static float AgentRadius;
 	static float RotationSpeed;
 	static float MoveSpeed;
+	static float MinAgentDistance;
 };

@@ -13,9 +13,12 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(win_width, win_height), "Flock", sf::Style::Default, settings);
 	window.setVerticalSyncEnabled(true);
 
-	Flock flock(up::Vec2(2000.0f, 2000.0f));
+	Flock flock(up::Vec2(win_width, win_height));
 
-	flock.addAgent(up::Vec2(500.0f, 500.0f), up::Vec2(0.0f, 1.0f));
+	const uint32_t n(16);
+	for (uint32_t i(0); i < n; ++i) {
+		flock.addAgent(up::Vec2(rand()%win_width, rand() % win_height), rand()%314159 / 5000.0f);
+	}
 
 	sfev::EventManager event_handler(window);
 	event_handler.addEventCallback(sf::Event::Closed, [&](const sf::Event&) {window.close(); });

@@ -160,8 +160,8 @@ namespace up
 
 		void vec2ToGridCoord(const Vec2& v, uint32_t& grid_x, uint32_t& grid_y)
 		{
-			int32_t body_x = uint32_t(v.x);
-			int32_t body_y = uint32_t(v.y);
+			int32_t body_x = int32_t(v.x);
+			int32_t body_y = int32_t(v.y);
 
 			grid_x = body_x / m_cell_size + 5;
 			grid_y = body_y / m_cell_size + 5;

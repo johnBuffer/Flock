@@ -7,17 +7,22 @@
 class Agent
 {
 public:
-	Agent(const up::Vec2& position, const up::Vec2& orientation);
+	Agent(const up::Vec2& position, float orientation);
 
-	void update(const std::vector<Agent*>& neighbors, const up::Vec2& flock_center, float dt);
+	void update(std::vector<Agent>& agents, const up::Vec2& dimension, float dt);
 
 	void addToVertexArray(sf::VertexArray& va, uint64_t index) const;
 
 	const up::Vec2& getPosition() const;
 
-	const up::Vec2& getOrientation() const;
+	up::Vec2 getOrientation() const;
+
+	static up::Vec2 getCenterOf(const std::vector<Agent*>& agents);
 
 private:
 	up::Vec2 m_position;
-	up::Vec2 m_orientation;
+	float m_orientation;
+
+	void avoidBounds(const up::Vec2& bounds);
+	std::vector<Agent*> getNeighbors(std::vector<Agent>& agents, float max_distance) const;
 };

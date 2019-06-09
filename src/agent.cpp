@@ -1,15 +1,35 @@
 #include "agent.hpp"
 #include "simulation_parameters.hpp"
 
-Agent::Agent(const up::Vec2& position, const up::Vec2& orientation)
+#include <iostream>
+#include <cmath>
+
+Agent::Agent(const up::Vec2& position, float orientation)
 	: m_position(position)
 	, m_orientation(orientation)
 {
 }
 
-void Agent::update(const std::vector<Agent*>& neighbors, const up::Vec2 & flock_center, float dt)
+void Agent::update(std::vector<Agent>& agents, const up::Vec2& dimension, float dt)
 {
-	m_position += (dt * SimulationParameters::MoveSpeed) * m_orientation;
+	const up::Vec2 orientation(getOrientation());
+	const up::Vec2 normal(orientation.getNormal());
+	const float max_dist(100.0f);
+
+	std::vector<Agent*> neighbors(getNeighbors(agents, max_dist));
+	if (!neighbors.empty()) {
+		const up::Vec2 center(getCenterOf(neighbors));
+		const up::Vec2 to_center((m_position - center).getNormalized());
+
+		const float dot(to_center.dot(normal));
+		m_orientation += SimulationParameters::RotationSpeed * (dot > 0.0f ? -1.0f : 1.0f);
+
+		/*for (Agent* a : neighbors) {
+			
+		}*/
+	}
+	
+	m_position += (dt * SimulationParameters::MoveSpeed) * getOrientation();
 }
 
 void Agent::addToVertexArray(sf::VertexArray& va, uint64_t index) const
@@ -17,9 +37,10 @@ void Agent::addToVertexArray(sf::VertexArray& va, uint64_t index) const
 	constexpr float agent_length(16.0f);
 	constexpr float agent_width(12.0f);
 
-	const up::Vec2& normal(m_orientation.getNormal());
+	const up::Vec2 orientation(getOrientation());
+	const up::Vec2& normal(orientation.getNormal());
 
-	const up::Vec2 head(m_position + agent_length * m_orientation);
+	const up::Vec2 head(m_position + agent_length * orientation);
 	const up::Vec2 wng1(m_position + (0.5f * agent_width) * normal);
 	const up::Vec2 wng2(m_position - (0.5f * agent_width) * normal);
 
@@ -37,7 +58,90 @@ const up::Vec2& Agent::getPosition() const
 	return m_position;
 }
 
-const up::Vec2& Agent::getOrientation() const
+up::Vec2 Agent::getOrientation() const
 {
-	return m_orientation;
+	return up::Vec2(cos(m_orientation), sin(m_orientation));
+}
+
+up::Vec2 Agent::getCenterOf(const std::vector<Agent*>& agents)
+{
+	up::Vec2 center(0.0f, 0.0f);
+
+	for (const Agent* a : agents) {
+		center.x += a->getPosition().x;
+		center.y += a->getPosition().y;
+	}
+
+	center.x /= float(agents.size());
+	center.y /= float(agents.size());
+
+	return center;
+}
+
+void Agent::avoidBounds(const up::Vec2& bounds)
+{
+	const float min_dist(2.0f * SimulationParameters::MinAgentDistance);
+	const up::Vec2 orientation(getOrientation());
+
+	if (m_position.y < min_dist) {
+		/*if (orientation.x > 0.0f) {
+			m_orientation += SimulationParameters::RotationSpeed;
+		} else {
+			m_orientation -= SimulationParameters::RotationSpeed;
+		}
+		*/
+		m_orientation += SimulationParameters::RotationSpeed;
+	}
+
+	if (m_position.y > bounds.y - min_dist) {
+		/*if (orientation.x > 0.0f) {
+			m_orientation += SimulationParameters::RotationSpeed;
+		}
+		else {
+			m_orientation -= SimulationParameters::RotationSpeed;
+		}*/
+
+		m_orientation -= SimulationParameters::RotationSpeed;
+
+	}
+
+	if (m_position.x < min_dist) {
+		/*if (orientation.y > 0.0f) {
+			m_orientation += SimulationParameters::RotationSpeed;
+		}
+		else {
+			m_orientation -= SimulationParameters::RotationSpeed;
+		}*/
+
+		m_orientation -= SimulationParameters::RotationSpeed;
+	}
+
+	if (m_position.x > bounds.x - min_dist) {
+		/*if (orientation.y > 0.0f) {
+			m_orientation += SimulationParameters::RotationSpeed;
+		}
+		else {
+			m_orientation -= SimulationParameters::RotationSpeed;
+		}*/
+
+		m_orientation -= SimulationParameters::RotationSpeed;
+
+	}
+}
+
+std::vector<Agent*> Agent::getNeighbors(std::vector<Agent>& agents, float max_distance) const
+{
+	std::vector<Agent*> neighbors;
+
+	for (Agent& a : agents) {
+		if (&a != this) {
+			const up::Vec2 v(m_position - a.getPosition());
+			const float distance(v.length());
+			if (distance < max_distance) {
+				neighbors.push_back(&a);
+			}
+		}
+	}
+
+	return neighbors;
 }

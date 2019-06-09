@@ -19,10 +19,13 @@ public:
 
 	void draw(sf::RenderTarget& target) const;
 
-	void addAgent(const up::Vec2& position, const up::Vec2& orientation);
+	void addAgent(const up::Vec2& position, float);
+
+	up::Vec2 getCenter() const;
 
 
 private:
 	std::vector<Agent> m_agents;
+	const up::Vec2 m_dimension;
 	Grid m_grid;
 };

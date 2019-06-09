@@ -43,6 +43,11 @@ struct Vec2
 		m_length = 1.0f;
 	}
 
+	Vec2 getNormalized() const
+	{
+		return Vec2(x / length(), y / length());
+	}
+
 	Vec2 getNormal() const
 	{
 		return Vec2(-y, x);
@@ -66,7 +71,7 @@ struct Vec2
 		y *= f;
 	}
 
-	float dot(const up::Vec2& v)
+	float dot(const up::Vec2& v) const
 	{
 		return x * v.x + y * v.y;
 	}

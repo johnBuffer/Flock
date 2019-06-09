@@ -2,20 +2,18 @@
 
 #include <iostream>
 
-Flock::Flock(const up::Vec2& dimension) :
-	m_grid(dimension, SimulationParameters::GridCellSize(), m_agents)
+Flock::Flock(const up::Vec2& dimension)
+	: m_dimension(dimension)
+	, m_grid(dimension, SimulationParameters::GridCellSize(), m_agents)
 {
 }
 
 void Flock::update(float dt)
 {
-	m_grid.update();
+	const up::Vec2 center(getCenter());
 
-	for (GridCell& cell : m_grid.getCells()) {
-		std::vector<Agent*> agents(cell.getItems());
-		for (Agent* a : agents) {
-			a->update(agents, up::Vec2(0.0f, 0.0f), dt);
-		}
+	for (Agent& a : m_agents) {
+		a.update(m_agents, m_dimension, dt);
 	}
 }
 
@@ -31,8 +29,23 @@ void Flock::draw(sf::RenderTarget& target) const
 	target.draw(va);
 }
 
-void Flock::addAgent(const up::Vec2& position, const up::Vec2& orientation)
+void Flock::addAgent(const up::Vec2& position, float orientation)
 {
 	m_agents.emplace_back(position, orientation);
+}
+
+up::Vec2 Flock::getCenter() const
+{
+	up::Vec2 center(0.0f, 0.0f);
+
+	for (const Agent& a : m_agents) {
+		center.x += a.getPosition().x;
+		center.y += a.getPosition().y;
+	}
+
+	center.x /= float(m_agents.size());
+	center.y /= float(m_agents.size());
+
+	return center;
 }
 

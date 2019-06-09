@@ -15,7 +15,7 @@ int main()
 
 	Flock flock(up::Vec2(win_width, win_height));
 
-	const uint32_t n(16);
+	const uint32_t n(512);
 	for (uint32_t i(0); i < n; ++i) {
 		flock.addAgent(up::Vec2(rand()%win_width, rand() % win_height), rand()%314159 / 5000.0f);
 	}

@@ -5,7 +5,8 @@
 class SimulationParameters
 {
 public:
-	static constexpr uint8_t GridMaxAgentPerCell = 64;
+	static constexpr uint8_t GridMaxAgentPerCell() { return 64; }
+	static constexpr uint32_t GridCellSize() { return 256; }
 
 	static float AgentRadius;
 	static float RotationSpeed;

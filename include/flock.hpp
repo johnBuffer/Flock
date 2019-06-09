@@ -10,15 +10,19 @@
 class Flock
 {
 public:
-	Flock(const uint32_t agent_count);
+	using Grid = up::Grid<SimulationParameters::GridMaxAgentPerCell()>;
+	using GridCell = up::GridCell<SimulationParameters::GridMaxAgentPerCell()>;
+
+	Flock(const up::Vec2& dimension);
 
 	void update(float dt);
 
 	void draw(sf::RenderTarget& target) const;
 
-	void addAgent(const up::Vec2& position, float orientation);
+	void addAgent(const up::Vec2& position, const up::Vec2& orientation);
+
 
 private:
 	std::vector<Agent> m_agents;
-	up::Grid<SimulationParameters::GridMaxAgentPerCell> m_grid;
+	Grid m_grid;
 };

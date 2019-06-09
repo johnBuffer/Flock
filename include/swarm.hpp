@@ -163,7 +163,6 @@ struct Worker
 	void stop()
 	{
 		running = false;
-		std::cout << "DONE" << std::endl;
 	}
 
 	void join()

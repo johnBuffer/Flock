@@ -34,7 +34,7 @@ namespace up
 		void add(Agent& a)
 		{
 			if (item_count < N) {
-				items[item_count++] = &b;
+				items[item_count++] = &a;
 			}
 		}
 
@@ -45,6 +45,16 @@ namespace up
 			}
 
 			item_count = 0;
+		}
+
+		std::vector<Agent*> getItems()
+		{
+			std::vector<Agent*> vec_items;
+			for (uint32_t i(0); i < item_count; ++i) {
+				vec_items.push_back(items[i]);
+			}
+
+			return vec_items;
 		}
 
 		std::array<Agent*, N> items;
@@ -107,7 +117,7 @@ namespace up
 		{
 			m_cells.resize(m_width * m_height);
 
-			m_swarm.setJob([this](std::vector<Body>& data, uint32_t id, uint32_t step) {addBodiesSwarm(data, id, step); });
+			m_swarm.setJob([this](std::vector<Agent>& data, uint32_t id, uint32_t step) {addFlockSwarm(data, id, step); });
 		}
 
 		void addToCell(uint32_t grid_cell_x, uint32_t grid_cell_y, Agent& a)
@@ -160,7 +170,7 @@ namespace up
 		void add(Agent& a)
 		{
 			const float radius(SimulationParameters::AgentRadius);
-			const Vec2& position(a.position());
+			const Vec2& position(a.getPosition());
 			
 			uint32_t grid_x, grid_y;
 			vec2ToGridCoord(position, grid_x, grid_y);
